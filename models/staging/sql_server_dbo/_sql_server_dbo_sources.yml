@@ -1,0 +1,35 @@
+sources:
+
+  - name: sql_server_dbo # name of the source 
+    schema: sql_server_dbo # this is the schema our raw data lives in
+    database: ALUMNO6_DEV_BRONZE_DB # this is the name of our database
+
+    quoting:
+      database: false 
+      schema: false
+      identifier: false
+
+    freshness:
+      warn_after: {count: 2444444, period: day}
+      #error_after: {count: 48, period: hour}
+
+    tables:
+
+      - name: addresses
+        loaded_at_field: _fivetran_synced
+        columns:
+          - name: ADDRESS_ID
+          - name: ZIPCODE
+          - name: COUNTRY
+          - name: ADDRESS
+          - name: STATE
+          - name: _FIVETRAN_DELETED
+          - name: _FIVETRAN_SYNCED
+
+      - name: events
+
+      - name: orders
+      - name: order_items
+      - name: products
+      - name: promos
+      - name: users
