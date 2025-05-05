@@ -15,6 +15,9 @@ sources:
         loaded_at_field: _fivetran_synced
         columns:
           - name: _row
+            tests:
+              - unique
+              - not_null
           - name: product_id
           - name: quantity
           - name: month

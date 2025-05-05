@@ -1,8 +1,13 @@
-sources:
+version: 2
 
-  - name: sql_server_dbo # name of the source 
-    schema: sql_server_dbo # this is the schema our raw data lives in
-    database: ALUMNO6_DEV_BRONZE_DB # this is the name of our database
+sources:
+  - name: sql_server_dbo 
+    description: >
+      Fuente principal del sistema operacional obtenida desde SQL Server mediante Fivetran. 
+      Contiene datos en crudo (raw) correspondientes a usuarios, órdenes, productos, eventos y promociones.
+
+    schema: sql_server_dbo 
+    database: ALUMNO6_DEV_BRONZE_DB 
 
     quoting:
       database: false 
@@ -10,26 +15,174 @@ sources:
       identifier: false
 
     freshness:
-      warn_after: {count: 2444444, period: day}
-      #error_after: {count: 48, period: hour}
+      warn_after: {count: 24, period: hour} # 24 horas es más común, ajusta según necesidades
+      error_after: {count: 48, period: hour}
 
     tables:
-
       - name: addresses
-        loaded_at_field: _fivetran_synced
+        description: "Tabla con información sobre las direcciones físicas de clientes y usuarios."
         columns:
-          - name: ADDRESS_ID
-          - name: ZIPCODE
-          - name: COUNTRY
-          - name: ADDRESS
-          - name: STATE
-          - name: _FIVETRAN_DELETED
-          - name: _FIVETRAN_SYNCED
+          - name: address_id
+            description: "Clave única para cada dirección."
+            tests:
+              - unique
+              - not_null
+          - name: zipcode
+            description: "Código postal correspondiente a la dirección."
+          - name: country
+            description: "País asociado a la dirección."
+          - name: address
+            description: "Dirección física completa."
+          - name: state
+            description: "Estado o región de la dirección."
+          - name: _fivetran_deleted
+            description: "Indicador booleano de si el registro fue eliminado en origen."
+          - name: _fivetran_synced
+            description: "Timestamp de última sincronización por Fivetran."
 
       - name: events
+        description: "Registro de eventos generados por interacciones de usuarios."
+        columns:
+          - name: event_id
+            description: "Identificador único para cada evento."
+            tests:
+              - unique
+              - not_null
+          - name: page_url
+            description: "URL específica donde ocurrió el evento."
+          - name: event_type
+            description: "Tipo de evento ocurrido (ejemplo: click, view)."
+          - name: user_id
+            description: "ID del usuario que generó el evento."
+          - name: product_id
+            description: "Producto asociado al evento (si aplica)."
+          - name: session_id
+            description: "ID de sesión del usuario."
+          - name: created_at
+            description: "Timestamp en que ocurrió el evento."
+          - name: order_id
+            description: "Orden asociada al evento (si aplica)."
+          - name: _fivetran_deleted
+            description: "Registro borrado en origen."
+          - name: _fivetran_synced
+            description: "Última sincronización con origen."
+
+      - name: order_items
+        description: "Detalles de cada ítem incluido en las órdenes."
+        columns:
+          - name: order_id
+            description: "Identificador de la orden asociada."
+            tests:
+              - not_null
+          - name: product_id
+            description: "Producto comprado en la orden."
+            tests:
+              - not_null
+          - name: quantity
+            description: "Cantidad del producto comprada."
+          - name: _fivetran_deleted
+            description: "Registro borrado en origen."
+          - name: _fivetran_synced
+            description: "Última sincronización con origen."
 
       - name: orders
-      - name: order_items
+        description: "Tabla que registra todas las órdenes realizadas por los usuarios."
+        columns:
+          - name: order_id
+            description: "Identificador único de la orden."
+            tests:
+              - unique
+              - not_null
+          - name: shipping_service
+            description: "Servicio utilizado para el envío."
+          - name: shipping_cost
+            description: "Costo del envío en USD."
+          - name: address_id
+            description: "ID de la dirección donde se envía la orden."
+          - name: created_at
+            description: "Fecha y hora en que se creó la orden."
+          - name: promo_id
+            description: "Código promocional aplicado a la orden (si existe)."
+          - name: estimated_delivery_at
+            description: "Fecha estimada para la entrega."
+          - name: order_cost
+            description: "Costo total de productos antes de descuentos."
+          - name: user_id
+            description: "Usuario que generó la orden."
+          - name: order_total
+            description: "Costo total final tras descuentos y envío."
+          - name: delivered_at
+            description: "Fecha real de entrega de la orden."
+          - name: tracking_id
+            description: "Código para rastrear la entrega."
+          - name: status
+            description: "Estado actual de la orden (ej. Entregada, En camino)."
+          - name: _fivetran_deleted
+            description: "Registro borrado en origen."
+          - name: _fivetran_synced
+            description: "Última sincronización con origen."
+
       - name: products
+        description: "Información básica de los productos disponibles."
+        columns:
+          - name: product_id
+            description: "Clave única del producto."
+            tests:
+              - unique
+              - not_null
+          - name: price
+            description: "Precio actual del producto en USD."
+          - name: name
+            description: "Nombre descriptivo del producto."
+          - name: inventory
+            description: "Inventario disponible del producto."
+          - name: _fivetran_deleted
+            description: "Registro borrado en origen."
+          - name: _fivetran_synced
+            description: "Última sincronización con origen."
+
       - name: promos
+        description: "Datos de promociones y descuentos."
+        columns:
+          - name: promo_id
+            description: "Clave única de la promoción."
+            tests:
+              - unique
+              - not_null
+          - name: discount
+            description: "Porcentaje o monto de descuento aplicado."
+          - name: status
+            description: "Estado de la promoción (activa, inactiva)."
+          - name: _fivetran_deleted
+            description: "Registro borrado en origen."
+          - name: _fivetran_synced
+            description: "Última sincronización con origen."
+
       - name: users
+        description: "Tabla con datos personales y de contacto de los usuarios."
+        columns:
+          - name: user_id
+            description: "Identificador único del usuario."
+            tests:
+              - unique
+              - not_null
+          - name: updated_at
+            description: "Fecha de última actualización del registro."
+          - name: address_id
+            description: "Dirección física asociada al usuario."
+          - name: last_name
+            description: "Apellido del usuario."
+          - name: created_at
+            description: "Fecha de creación del usuario."
+          - name: phone_number
+            description: "Teléfono de contacto."
+          - name: total_orders
+            description: "Total acumulado de órdenes realizadas por el usuario."
+          - name: first_name
+            description: "Nombre del usuario."
+          - name: email
+            description: "Correo electrónico del usuario."
+          - name: _fivetran_deleted
+            description: "Registro borrado en origen."
+          - name: _fivetran_synced
+            description: "Última sincronización con origen."
