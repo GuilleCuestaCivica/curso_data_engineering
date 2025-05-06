@@ -1,5 +1,5 @@
 select 
-    product_id,
+    {{ dbt_utils.generate_surrogate_key(['PRODUCT_ID']) }} AS product_id,
     price, --pasar de comas a puntos y ver si la moneda es la misma
     name,
     inventory
