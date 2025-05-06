@@ -28,6 +28,10 @@ sources:
               - unique
               - not_null
           - name: zipcode
+            #tests:
+              #- dbt_utils.length_equal:
+                  #value: 5
+                  #severity: warn
             description: "Código postal correspondiente a la dirección."
           - name: country
             description: "País asociado a la dirección."
@@ -79,6 +83,8 @@ sources:
             tests:
               - not_null
           - name: quantity
+            tests:
+              - positive_values
             description: "Cantidad del producto comprada."
           - name: _fivetran_deleted
             description: "Registro borrado en origen."
@@ -152,6 +158,9 @@ sources:
           - name: discount
             description: "Porcentaje o monto de descuento aplicado."
           - name: status
+            tests:
+              - accepted_values:
+                  values: ['inactive', 'active']
             description: "Estado de la promoción (activa, inactiva)."
           - name: _fivetran_deleted
             description: "Registro borrado en origen."

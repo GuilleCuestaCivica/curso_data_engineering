@@ -13,3 +13,4 @@ SELECT
     {{ dbt_utils.generate_surrogate_key(['promo_id']) }} AS promo_id,
     {{ dbt_utils.generate_surrogate_key(['user_id']) }} AS user_id
 FROM {{ source('sql_server_dbo', 'orders') }}
+WHERE _FIVETRAN_DELETED IS NULL

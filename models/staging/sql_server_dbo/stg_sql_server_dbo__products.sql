@@ -5,3 +5,4 @@ select
     inventory
     --macro para fivetram_deleted.
 from {{source('sql_server_dbo', 'products')}}
+WHERE _FIVETRAN_DELETED IS NULL

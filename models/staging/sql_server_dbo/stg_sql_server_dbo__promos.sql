@@ -4,6 +4,7 @@ select
 	STATUS ,
     PROMO_ID as DESC_PROMO
 FROM {{ source('sql_server_dbo', 'promos') }}
+WHERE _FIVETRAN_DELETED IS NULL
 
 UNION ALL
 

@@ -15,3 +15,4 @@ SELECT
     {{ dbt_utils.generate_surrogate_key(['tracking_id']) }} AS tracking_id,
     status
 FROM {{ source('sql_server_dbo', 'orders') }}
+WHERE _FIVETRAN_DELETED IS NULL

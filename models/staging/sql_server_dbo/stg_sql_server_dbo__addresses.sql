@@ -6,3 +6,4 @@ select
     state
     --macro para fivetram_deleted.
 from {{source('sql_server_dbo', 'addresses')}}
+WHERE _FIVETRAN_DELETED IS NULL
