@@ -15,7 +15,7 @@ sources:
       identifier: false
 
     freshness:
-      warn_after: {count: 24, period: hour} # 24 horas es más común, ajusta según necesidades
+      warn_after: {count: 2422222, period: day} 
       error_after: {count: 48, period: hour}
 
     tables:
