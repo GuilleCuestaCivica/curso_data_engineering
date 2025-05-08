@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: stg_date
+    description: "Dimensión de fechas desde 2021 hasta 2024 para análisis temporal y modelado en GOLD."
+    columns:
+      - name: date
+        description: "Fecha completa. Clave primaria de la dimensión."
+        tests:
+          - not_null
+          - unique
+
+      - name: year
+        description: "Año numérico de la fecha."
+
+      - name: month
+        description: "Mes numérico de la fecha."
+
+      - name: day
+        description: "Día numérico del mes."
+
+      - name: day_of_week
+        description: "Número del día de la semana. (1=Domingo, 7=Sábado en Snowflake)"
+
+      - name: month_name
+        description: "Nombre del mes sin espacios extras."
+
+      - name: day_name
+        description: "Nombre abreviado del día de la semana (ejemplo: MON, TUE, WED)."
+
+      - name: is_past
+        description: "Indicador TRUE/FALSE si la fecha es pasada o igual al día actual."

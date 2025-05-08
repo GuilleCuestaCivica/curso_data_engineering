@@ -1,9 +1,24 @@
-select 
+{{
+    config(
+        materialized='incremental'
+    )
+}}
+
+WITH addresses_source AS (
+
+    SELECT 
+        *
+    FROM {{ source('sql_server_dbo', 'addresses') }}
+    WHERE _FIVETRAN_DELETED IS NULL
+
+)
+
+SELECT 
     address_id,
-    zipcode, 
-    country, --todos en el mismo idioma
+    zipcode,  --ver en gmail el csv con las ciudades y añadir la columna
+                --preguntar si poner el csv como seed o como hacerlo
+    country, 
     address,
     state
-    --macro para fivetram_deleted.
-from {{source('sql_server_dbo', 'addresses')}}
-WHERE _FIVETRAN_DELETED IS NULL
+
+FROM addresses_source
