@@ -7,7 +7,7 @@ sources:
       Contiene datos en crudo (raw) correspondientes a usuarios, órdenes, productos, eventos y promociones.
 
     schema: sql_server_dbo 
-    database: ALUMNO6_DEV_BRONZE_DB 
+    database: "{{ env_var('DBT_ENVIRONMENTS') }}_BRONZE_DB"
 
     quoting:
       database: false 
