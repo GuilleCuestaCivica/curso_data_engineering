@@ -41,14 +41,16 @@ models:
     # Applies to all files under models/example/
     staging:
       +materialized: view
+      +intermediate:
+        +schema: dbt_gcuesta
       +database: "{{ env_var('DBT_ENVIRONMENTS') }}_SILVER_DB"
       google_sheets:
-        +schema: google_sheets
+        +schema: dbt_gcuesta
       sql_server_dbo:
-        +schema: sql_server_dbo
+        +schema: dbt_gcuesta
       
     marts:
       +materialized: table
       +database: "{{ env_var('DBT_ENVIRONMENTS') }}_GOLD_DB"
       core:
-        +schema: core
+        +schema: dbt_gcuesta

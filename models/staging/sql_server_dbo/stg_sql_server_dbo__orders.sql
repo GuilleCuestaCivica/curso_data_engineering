@@ -1,41 +1,70 @@
-{{
-    config(
-        materialized='incremental'
+{{ config(materialized="incremental", unique_key="order_id") }}
+
+with
+    orders_source as (
+
+        select *
+        from {{ source("sql_server_dbo", "orders") }}
+        where _fivetran_deleted is null
+
     )
-}}
 
-WITH orders_source AS (
+select
+    {{ dbt_utils.generate_surrogate_key(["order_id"]) }} as order_id,
+    {{ dbt_utils.generate_surrogate_key(["address_id"]) }} as address_id,
 
-    SELECT 
-        *
-    FROM {{ source('sql_server_dbo', 'orders') }}
-    WHERE _FIVETRAN_DELETED IS NULL
+    convert_timezone(
+        'Etc/GMT-2', 'UTC', cast(created_at as timestamp_ntz)
+    ) as created_at,
+    to_date(
+        convert_timezone('Etc/GMT-2', 'UTC', cast(created_at as timestamp_ntz))
+    ) as created_date,
+    to_char(
+        convert_timezone('Etc/GMT-2', 'UTC', cast(created_at as timestamp_ntz)),
+        'HH24:MI:SS'
+    ) as created_time,
 
-)
+    convert_timezone(
+        'Etc/GMT-2', 'UTC', cast(estimated_delivery_at as timestamp_ntz)
+    ) as estimated_delivery_at,
+    to_date(
+        convert_timezone(
+            'Etc/GMT-2', 'UTC', cast(estimated_delivery_at as timestamp_ntz)
+        )
+    ) as estimated_delivery_date,
+    to_char(
+        convert_timezone(
+            'Etc/GMT-2', 'UTC', cast(estimated_delivery_at as timestamp_ntz)
+        ),
+        'HH24:MI:SS'
+    ) as estimated_delivery_time,
 
-SELECT 
-    {{ dbt_utils.generate_surrogate_key(['order_id']) }} AS order_id,
-    {{ dbt_utils.generate_surrogate_key(['address_id']) }} AS address_id,
+    convert_timezone(
+        'Etc/GMT-2', 'UTC', cast(delivered_at as timestamp_ntz)
+    ) as delivered_at,
+    to_date(
+        convert_timezone('Etc/GMT-2', 'UTC', cast(delivered_at as timestamp_ntz))
+    ) as delivered_at_date,
+    to_char(
+        convert_timezone('Etc/GMT-2', 'UTC', cast(delivered_at as timestamp_ntz)),
+        'HH24:MI:SS'
+    ) as delivered_at_time,
 
-    CONVERT_TIMEZONE('Etc/GMT-2', 'UTC', CAST(created_at AS TIMESTAMP_NTZ)) AS created_at,
-    TO_DATE(CONVERT_TIMEZONE('Etc/GMT-2', 'UTC', CAST(created_at AS TIMESTAMP_NTZ))) AS created_date, 
-    TO_CHAR(CONVERT_TIMEZONE('Etc/GMT-2', 'UTC', CAST(created_at AS TIMESTAMP_NTZ)), 'HH24:MI:SS') AS created_time,
-    
+    {{ dbt_utils.generate_surrogate_key(["promo_id"]) }} as promo_id,
+    {{ dbt_utils.generate_surrogate_key(["user_id"]) }} as user_id,
+    {{ dbt_utils.generate_surrogate_key(["tracking_id"]) }} as tracking_id,
 
-    CONVERT_TIMEZONE('Etc/GMT-2', 'UTC', CAST(ESTIMATED_DELIVERY_AT AS TIMESTAMP_NTZ)) AS estimated_delivery_at,
-    TO_DATE(CONVERT_TIMEZONE('Etc/GMT-2', 'UTC', CAST(ESTIMATED_DELIVERY_AT AS TIMESTAMP_NTZ))) AS estimated_delivery_date, 
-    TO_CHAR(CONVERT_TIMEZONE('Etc/GMT-2', 'UTC', CAST(ESTIMATED_DELIVERY_AT AS TIMESTAMP_NTZ)), 'HH24:MI:SS') AS estimated_delivery_time,
-
-    CONVERT_TIMEZONE('Etc/GMT-2', 'UTC', CAST(DELIVERED_AT AS TIMESTAMP_NTZ)) AS delivered_at,
-    TO_DATE(CONVERT_TIMEZONE('Etc/GMT-2', 'UTC', CAST(DELIVERED_AT AS TIMESTAMP_NTZ))) AS delivered_at_date, 
-    TO_CHAR(CONVERT_TIMEZONE('Etc/GMT-2', 'UTC', CAST(DELIVERED_AT AS TIMESTAMP_NTZ)), 'HH24:MI:SS') AS delivered_at_time,
-
-    {{ dbt_utils.generate_surrogate_key(['promo_id']) }} AS promo_id,
-    {{ dbt_utils.generate_surrogate_key(['user_id']) }} AS user_id,
-    {{ dbt_utils.generate_surrogate_key(['tracking_id']) }} AS tracking_id,
-
+    order_cost,
+    order_total,
     shipping_service,
     shipping_cost,
-    status
+    status,
+    _fivetran_synced
 
-FROM orders_source
+from orders_source
+
+{% if is_incremental() %}
+
+  where _fivetran_synced > (select max(_fivetran_synced) from {{ this }})
+
+{% endif %}

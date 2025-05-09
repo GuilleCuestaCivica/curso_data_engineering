@@ -23,6 +23,13 @@ SELECT
     CONVERT_TIMEZONE('Etc/GMT-2', 'UTC', CAST(created_at AS TIMESTAMP_NTZ)) AS created_at, -- UTC +2
     {{ validar_telefono('PHONE_NUMBER') }} AS PHONE_NUMBER,
     EMAIL,
-    {{ validar_gmail('EMAIL') }} AS VALID_GMAIL
+    {{ validar_gmail('EMAIL') }} AS VALID_GMAIL,
+    _fivetran_synced
 
 FROM users_source
+
+{% if is_incremental() %}
+
+  where _fivetran_synced > (select max(_fivetran_synced) from {{ this }})
+
+{% endif %}
