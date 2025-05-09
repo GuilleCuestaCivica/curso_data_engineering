@@ -1,0 +1,103 @@
+models:
+  - name: int_order_line_allocations
+    description: ""
+    columns:
+      - name: order_item_id
+        data_type: varchar
+        description: ""
+
+      - name: order_id
+        data_type: varchar
+        description: ""
+
+      - name: product_id
+        data_type: varchar
+        description: ""
+
+      - name: quantity
+        data_type: number
+        description: ""
+
+      - name: address_id
+        data_type: varchar
+        description: ""
+
+      - name: promo_id
+        data_type: varchar
+        description: ""
+
+      - name: user_id
+        data_type: varchar
+        description: ""
+
+      - name: shipping_service
+        data_type: varchar
+        description: ""
+
+      - name: shipping_cost
+        data_type: float
+        description: ""
+
+      - name: created_at
+        data_type: timestamp_ntz
+        description: ""
+
+      - name: estimated_delivery_at
+        data_type: timestamp_ntz
+        description: ""
+
+      - name: delivered_at
+        data_type: timestamp_ntz
+        description: ""
+
+      - name: tracking_id
+        data_type: varchar
+        description: ""
+
+      - name: status
+        data_type: varchar
+        description: ""
+
+      - name: order_cost
+        data_type: float
+        description: ""
+
+      - name: order_total
+        data_type: float
+        description: ""
+
+      - name: product_name
+        data_type: varchar
+        description: ""
+
+      - name: price
+        data_type: float
+        description: ""
+
+      - name: inventory
+        data_type: number
+        description: ""
+
+      - name: peso
+        data_type: float
+        description: ""
+
+      - name: peso_item
+        data_type: float
+        description: ""
+
+      - name: peso_total_pedido
+        data_type: float
+        description: ""
+
+      - name: shipping_cost_proporcional
+        data_type: float
+        description: ""
+
+      - name: promo_discount
+        data_type: float
+        description: ""
+
+      - name: promo_discount_proporcional
+        data_type: float
+        description: ""

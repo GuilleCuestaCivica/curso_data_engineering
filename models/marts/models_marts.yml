@@ -1,0 +1,47 @@
+models:
+  - name: dim__users
+    description: ""
+    columns:
+      - name: user_id
+        data_type: varchar
+        description: ""
+
+      - name: updated_at
+        data_type: timestamp_ntz
+        description: ""
+
+      - name: address_id
+        data_type: varchar
+        description: ""
+
+      - name: first_name
+        data_type: varchar
+        description: ""
+
+      - name: last_name
+        data_type: varchar
+        description: ""
+
+      - name: created_at
+        data_type: timestamp_ntz
+        description: ""
+
+      - name: phone_number
+        data_type: varchar
+        description: ""
+
+      - name: email
+        data_type: varchar
+        description: ""
+
+      - name: valid_gmail
+        data_type: boolean
+        description: ""
+
+      - name: total_pedidos_usuario
+        data_type: number
+        description: ""
+
+      - name: total_gastado_usuario
+        data_type: float
+        description: ""
